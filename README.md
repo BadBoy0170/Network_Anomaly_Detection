@@ -9,7 +9,7 @@ A robust machine learning-based system for detecting anomalies in encrypted netw
 - **Improved Model Training**: Ensured models train with normalized data and proper thresholds.
 - **Performance Note**: TensorFlow.js Node backend installation may fail if project path has spaces. See installation section.
 
-## 🚀 Quick Start
+##  Quick Start
 
 ### Prerequisites
 - Node.js v18+ (v22 may require additional setup for native builds)
