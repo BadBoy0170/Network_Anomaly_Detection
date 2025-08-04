@@ -6,10 +6,12 @@
   "type": "module",
   "scripts": {
     "start": "node src/index.js",
-    "test": "vitest"
+    "test": "vitest",
+    "dev": "node src/index.js"
   },
   "dependencies": {
     "@tensorflow/tfjs": "^4.17.0",
+    "@tensorflow/tfjs-node": "^4.17.0",
     "mathjs": "^12.3.2",
     "pcap-parser": "^0.2.1",
     "ml-kmeans": "^5.0.0"

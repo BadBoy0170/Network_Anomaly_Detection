@@ -1,115 +1,91 @@
 # Network Anomaly Detection System
 
-A robust machine learning-based system designed to detect anomalies in encrypted network traffic using a variety of detection algorithms, including Autoencoder, One-Class SVM, and K-means clustering.
+A robust machine learning-based system for detecting anomalies in encrypted network traffic using Autoencoder, One-Class SVM, and K-Means clustering.
 
-## Key Features
+## 🚨 Recent Fixes
 
-- **Real-time Analysis**: Processes live network traffic or analyzes PCAP files.
-- **Versatile Detection**: Supports multiple anomaly detection algorithms:
-  - **Autoencoder**: Powered by TensorFlow.js.
-  - **One-Class SVM**: Custom implementation tailored for network anomalies.
-  - **K-means Clustering**: Efficient clustering to identify outliers.
-- **Encrypted Traffic Insights**: Specializes in analyzing TLS/SSL encrypted traffic.
-- **Feature Extraction**: Extracts meaningful features from raw network packets.
-- **Interactive Visualizations**: Visualize anomalies for better insights.
+- **Resolved Stuck Execution**: Fixed by adding feature normalization in One-Class SVM to prevent kernel underflow.
+- **Fixed Visualization Errors**: Updated visualizer to handle results properly with error checking.
+- **Improved Model Training**: Ensured models train with normalized data and proper thresholds.
+- **Performance Note**: TensorFlow.js Node backend installation may fail if project path has spaces. See installation section.
 
-## Installation
+## 🚀 Quick Start
 
-Clone the repository:
+### Prerequisites
+- Node.js v18+ (v22 may require additional setup for native builds)
+- NPM v9+
+- Python 3.6+ (for native compilations if needed)
 
+### Installation
+
+1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/network-anomaly-detection.git  
-cd network-anomaly-detection  
+git clone https://github.com/yourusername/network-anomaly-detection.git
+cd network-anomaly-detection
 ```
 
-Install dependencies:
-
+**Important**: If your project path has spaces (e.g., "Network Anomaly Detection"), rename folders to remove spaces before installing dependencies. Example:
 ```bash
-npm install  
+mv "Network Anomaly Detection" Network-Anomaly-Detection
+cd Network-Anomaly-Detection/network-anomaly-detection
+```
+This prevents build errors during native dependency installation.
+
+2. Install dependencies:
+```bash
+npm install
 ```
 
-## Usage
+3. (Optional) Install TensorFlow.js Node backend for faster performance:
+```bash
+npm install @tensorflow/tfjs-node
+```
+If installation fails (e.g., build errors), ensure no spaces in path and required build tools installed (see Troubleshooting).
+
+## 📖 Usage
 
 ### Run with Mock Data
-
-To start the system with pre-configured mock data:
-
 ```bash
-npm start  
+npm start
 ```
 
-### Analyze a PCAP File
-
-Analyze network traffic from a PCAP file:
-
+### Analyze PCAP File
 ```bash
-npm start /path/to/your/capture.pcap  
+npm start /path/to/capture.pcap
 ```
 
-### Using Supabase
-
-If you want to use Supabase for this project, create a `.env` file in the root directory and include the following variables:
-
-```env
-VITE_SUPABASE_ANON_KEY=YOUR_SUPABASE_ANON_KEY
-VITE_SUPABASE_URL=https://YOUR_SUPABASE_URL
-```
-Replace `YOUR_SUPABASE_ANON_KEY` and `YOUR_SUPABASE_URL` with your actual Supabase credentials. Keep this file secure and do not share it publicly.
-
-## Project Structure
-
-```
-src/  
-├── capture/           # Modules for packet capture and PCAP file reading  
-├── detection/         # Core anomaly detection algorithms  
-├── features/          # Feature extraction logic  
-├── utils/             # Helper functions and utilities  
-├── visualization/     # Anomaly visualization components  
-└── index.js           # Application entry point  
-```
-
-## Development
-
-Run the test suite:
-
+### Run Tests
 ```bash
-npm test  
+npm test
 ```
 
-## Contributing
+## 🔧 Troubleshooting
 
-We welcome contributions to enhance the system:
+### Application Stuck or Errors
+- **Model Training Errors**: Ensure sufficient data; mock generator provides ~2000 packets.
+- **TypeError in Visualizer**: Update to latest code with fixed visualizer.
+- **SVM Prediction Error**: Fixed by normalization; pull latest changes.
 
-1. Fork the repository.
-2. Create a feature branch:
+### Dependency Installation Issues
+- **node-pre-gyp build failures**: Often due to spaces in path or missing build tools.
+  - macOS: Install Xcode Command Line Tools: `xcode-select --install`
+  - Also install: `brew install pkg-config cairo pango libpng jpeg giflib librsvg`
+- **No pre-built binaries**: Try older Node.js version (e.g., v20) or build from source.
+- **Heap Out of Memory**: Run with `node --max-old-space-size=4096 src/index.js`
 
+### Debug Logging
 ```bash
-git checkout -b feature/your-feature-name  
+DEBUG=* npm start
 ```
 
-3. Commit your changes:
+## 📁 Project Structure
 
-```bash
-git commit -m "Add your descriptive commit message"  
-```
+- `src/capture/`: Packet capturing and reading
+- `src/detection/`: Anomaly models and detector
+- `src/features/`: Feature extraction
+- `src/utils/`: Helper functions
+- `src/visualization/`: Results display
+- `src/index.js`: Main entry
 
-4. Push to your forked repository:
-
-```bash
-git push origin feature/your-feature-name  
-```
-
-5. Submit a Pull Request to the main repository.
-
-## Requirements
-
-- **Node.js**: Version 18.0.0 or higher
-- **NPM**: Version 9.0.0 or higher
-
-## License
-
-This project is licensed under the MIT License. See the LICENSE file for more details.
-
-## Note
-
-There may be some errors in this system. Please report any issues you encounter so they can be addressed.
+## 📄 License
+MIT License - see LICENSE file.

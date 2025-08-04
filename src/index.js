@@ -34,6 +34,12 @@ async function main() {
       packets = await packetCapture.startCapture();
     }
 
+    if (!packets || packets.length === 0) {
+      throw new Error('No packets captured or loaded');
+    }
+
+    console.log(`Captured ${packets.length} packets`);
+
     // Extract features
     console.log('Extracting features...');
     const basicFeatures = featureExtractor.extractFeatures(packets);
@@ -44,29 +50,71 @@ async function main() {
       ...tlsFeatures
     };
 
-    // Train models first
-    console.log('Training models...');
-    await Promise.all([
-      svmModel.train([features]),
-      kmeansModel.train([features])
-    ]);
+    console.log('Features extracted:', Object.keys(features));
 
-    // Then detect anomalies
+    // Train models with proper error handling
+    console.log('Training models...');
+    
+    // Prepare training data
+    const trainingData = [features];
+    
+    // Train SVM model
+    try {
+      await svmModel.train(trainingData);
+      console.log('SVM model trained successfully');
+    } catch (error) {
+      console.warn('SVM training failed:', error.message);
+    }
+
+    // Train KMeans model
+    try {
+      await kmeansModel.train(trainingData);
+      console.log('KMeans model trained successfully');
+    } catch (error) {
+      console.warn('KMeans training failed:', error.message);
+    }
+
+    // Detect anomalies with error handling
     console.log('Analyzing traffic for anomalies...');
-    const results = await Promise.all([
-      anomalyDetector.detectAnomalies(features),
-      svmModel.predict(features),
-      kmeansModel.predict(features)
-    ]);
+    const results = [];
+    
+    // Autoencoder detection
+    try {
+      const autoencoderResult = await anomalyDetector.detectAnomalies(features);
+      results.push({ type: 'autoencoder', ...autoencoderResult });
+    } catch (error) {
+      console.warn('Autoencoder detection failed:', error.message);
+      results.push({ type: 'autoencoder', error: error.message });
+    }
+
+    // SVM detection
+    try {
+      const svmResult = svmModel.predict(features);
+      results.push({ type: 'svm', isAnomaly: svmResult, score: svmResult ? 1 : 0 });
+    } catch (error) {
+      console.warn('SVM detection failed:', error.message);
+      results.push({ type: 'svm', error: error.message });
+    }
+
+    // KMeans detection
+    try {
+      const kmeansResult = kmeansModel.predict(features);
+      results.push({ type: 'kmeans', isAnomaly: kmeansResult, score: kmeansResult ? 1 : 0 });
+    } catch (error) {
+      console.warn('KMeans detection failed:', error.message);
+      results.push({ type: 'kmeans', error: error.message });
+    }
 
     // Visualize results
     console.log('Generating visualization...');
     visualizer.visualizeAnomalies({
-      autoencoder: results[0],
-      svm: results[1],
-      kmeans: results[2],
-      features
+      results,
+      features,
+      packets
     });
+
+    console.log('Analysis complete!');
+    console.log('Results:', results);
 
   } catch (error) {
     console.error('Error in anomaly detection:', error);
@@ -74,4 +122,7 @@ async function main() {
   }
 }
 
-main();
+main().catch(error => {
+  console.error('Fatal error:', error);
+  process.exit(1);
+});
